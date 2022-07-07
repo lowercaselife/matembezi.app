@@ -4,7 +4,7 @@ class APIFeatures {
     this.queryString = queryString;
   }
 
-  // filtering feature
+  // Filtering(deconstructing the req.query object and limiting fields)
   filter() {
     const queryObj = { ...this.queryString };
     const excludedFields = ['page', 'sort', 'limit', 'fields'];
