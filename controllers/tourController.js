@@ -70,7 +70,7 @@ exports.updateTour = catchAsync(async (req, res, next) => {
   });
 
   if (!tour) {
-    // checks for validity of tour ID string and returns 404 error if tour doesn't exist
+    // checks for validity of tour ID string and returns 404 error if tour doesn't exist.
     return next(new AppError('No tour found with that ID', 404));
   }
 
@@ -87,7 +87,7 @@ exports.deleteTour = catchAsync(async (req, res, next) => {
   const tour = await Tour.findByIdAndDelete(req.params.id);
 
   if (!tour) {
-    // checks for validity of tour string and returns 404 error
+    // checks for validity of tour ID string and returns 404 error if tour doesn't exist.
     return next(new AppError('No tour found with that ID', 404));
   }
 
