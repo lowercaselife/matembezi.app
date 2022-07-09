@@ -61,10 +61,10 @@ module.exports = (err, req, res, next) => {
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
 
-    if (error.kind === 'ObjectId') error = handleCastErrorDB(error);
+    if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
     // eslint-disable-next-line no-constant-condition
-    if (error.kind === 'enum' || 'user defined')
+    if (error.name === 'ValidationError')
       error = handleValidationErrorDB(error);
 
     sendErrorProd(error, res);
