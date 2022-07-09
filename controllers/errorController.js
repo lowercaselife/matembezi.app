@@ -1,7 +1,20 @@
 const AppError = require('../utils/appError');
 
 const handleCastErrorDB = (err) => {
+  // handles errors caused by searching for a non existent tour ID
   const message = `Invalid ${err.path}: ${err.value}.`;
+  return new AppError(message, 400);
+};
+
+const handleDuplicateFieldsDB = (err) => {
+  // handles creating a new tour with duplicate fields
+  const message = `Duplicate field value: ${err.keyValue.name}. Please use another value`;
+  return new AppError(message, 400);
+};
+
+const handleValidationErrorDB = (err) => {
+  const errors = Object.values(err.errors).map((el) => el.message);
+  const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400);
 };
 
@@ -24,9 +37,8 @@ const sendErrorProd = (err, res) => {
       status: err.status,
       message: err.message,
     });
-
-    // Programming or other unknown error: Don't leak error details
   } else {
+    // Programming or other unknown error: Don't leak error details
     // 1) Log error
     console.error('ERROR 👻🚫', err);
 
@@ -50,6 +62,10 @@ module.exports = (err, req, res, next) => {
     let error = { ...err };
 
     if (error.kind === 'ObjectId') error = handleCastErrorDB(error);
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    // eslint-disable-next-line no-constant-condition
+    if (error.kind === 'enum' || 'user defined')
+      error = handleValidationErrorDB(error);
 
     sendErrorProd(error, res);
   }
